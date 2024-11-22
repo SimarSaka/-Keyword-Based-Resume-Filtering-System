@@ -1,0 +1,97 @@
+import tkinter as tk
+from tkinter import filedialog, messagebox
+
+def open_file():
+    file_path = filedialog.askopenfilename()
+    if file_path:
+        messagebox.showinfo("Selected File", f"You selected: {file_path}")
+
+# Create the main window
+root = tk.Tk()
+root.title("Tkinter in Jupyter")
+root.geometry("400x200")
+
+# Add a button to open a file dialog
+button = tk.Button(root, text="Open File", command=open_file)
+button.pack(pady=20)
+
+# Run the Tkinter main loop
+root.mainloop()import os
+import fitz  # PyMuPDF
+import tkinter as tk
+from tkinter import filedialog, messagebox, scrolledtext
+
+# Function to extract text from a PDF
+def extract_text_from_pdf(file_path):
+    doc = fitz.open(file_path)
+    full_text = []
+    for page_num in range(len(doc)):
+        page = doc.load_page(page_num)
+        full_text.append(page.get_text())
+    return '\n'.join(full_text)
+
+# Function to check if the resume contains any of the keywords
+def resume_contains_keywords(resume_text, keywords):
+    return any(keyword.lower() in resume_text.lower() for keyword in keywords)
+
+# Function to get matching resumes
+def get_matching_resumes(resume_folder, keywords):
+    matching_resumes = []
+    for resume_file in os.listdir(resume_folder):
+        if resume_file.endswith('.pdf'):
+            resume_path = os.path.join(resume_folder, resume_file)
+            resume_text = extract_text_from_pdf(resume_path)
+            if resume_contains_keywords(resume_text, keywords):
+                matching_resumes.append(resume_file)
+    return matching_resumes
+
+# GUI Functionality
+def browse_folder():
+    folder_path = filedialog.askdirectory()
+    if folder_path:
+        folder_entry.delete(0, tk.END)
+        folder_entry.insert(0, folder_path)
+
+def run_filtering():
+    resume_folder = folder_entry.get()
+    keywords = keyword_entry.get().split(',')
+    
+    if not resume_folder or not keywords:
+        messagebox.showwarning("Input Error", "Please select a folder and enter keywords.")
+        return
+
+    matching_resumes = get_matching_resumes(resume_folder, keywords)
+    result_text.delete(1.0, tk.END)
+    if matching_resumes:
+        result_text.insert(tk.END, "Matching Resumes:\n")
+        result_text.insert(tk.END, "\n".join(matching_resumes))
+    else:
+        result_text.insert(tk.END, "No matching resumes found.")
+
+# Create the main Tkinter window
+root = tk.Tk()
+root.title("Resume Filtering System")
+root.geometry("600x400")
+
+# Folder selection
+tk.Label(root, text="Resume Folder:").pack(pady=5)
+folder_entry = tk.Entry(root, width=50)
+folder_entry.pack(pady=5)
+browse_button = tk.Button(root, text="Browse", command=browse_folder)
+browse_button.pack(pady=5)
+
+# Keywords input
+tk.Label(root, text="Keywords (comma-separated):").pack(pady=5)
+keyword_entry = tk.Entry(root, width=50)
+keyword_entry.pack(pady=5)
+
+# Run button
+run_button = tk.Button(root, text="Run Filter", command=run_filtering)
+run_button.pack(pady=10)
+
+# Result display
+result_text = scrolledtext.ScrolledText(root, width=70, height=15)
+result_text.pack(pady=10)
+
+# Start the Tkinter main loop
+root.mainloop()
