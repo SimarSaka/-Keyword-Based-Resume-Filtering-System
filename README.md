@@ -4,7 +4,7 @@
 
 Recruiters often review hundreds of resumes manually, which is slow, tiring, and inconsistent. Important keyword combinations can easily be missed when scanning large numbers of PDF files by hand. This creates a bottleneck in the hiring process and reduces efficiency.
 
- ![image alt](https://github.com/SimarSaka/-Keyword-Based-Resume-Filtering-System/blob/main/Fig10.jpeg?raw=true)
+
 
 
 ## The Solution: Automated Precision
